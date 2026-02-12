@@ -20,73 +20,75 @@ export default function Login() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm">
-        <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary">
-            <Lock className="h-6 w-6 text-primary-foreground" />
-          </div>
-          <h1 className="text-2xl font-semibold text-foreground">Sign in to VaultLink</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Secure document exchange platform
-          </p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="you@company.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+        <div className="rounded-lg border border-border bg-card p-8" style={{ boxShadow: '0 8px 32px hsla(220, 40%, 2%, 0.6), 0 0 0 1px hsla(217, 24%, 21%, 0.3)' }}>
+          <div className="mb-8 text-center">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/15" style={{ boxShadow: '0 0 20px hsla(245, 58%, 58%, 0.2)' }}>
+              <Lock className="h-6 w-6 text-primary" />
+            </div>
+            <h1 className="text-2xl font-semibold text-foreground">Sign in to VaultLink</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Secure document exchange platform
+            </p>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <div className="relative">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
               <Input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                id="email"
+                type="email"
+                placeholder="you@company.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
-              <button
-                type="button"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Checkbox id="remember" />
+                <Label htmlFor="remember" className="text-sm font-normal text-muted-foreground cursor-pointer">
+                  Remember me
+                </Label>
+              </div>
+              <button type="button" className="text-sm text-primary hover:underline">
+                Forgot password?
               </button>
             </div>
-          </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Checkbox id="remember" />
-              <Label htmlFor="remember" className="text-sm font-normal text-muted-foreground cursor-pointer">
-                Remember me
-              </Label>
-            </div>
-            <button type="button" className="text-sm text-primary hover:underline">
-              Forgot password?
-            </button>
-          </div>
+            <Button type="submit" className="w-full">
+              Sign in
+            </Button>
+          </form>
 
-          <Button type="submit" className="w-full">
-            Sign in
-          </Button>
-        </form>
-
-        <p className="mt-6 text-center text-sm text-muted-foreground">
-          Don't have an account?{" "}
-          <Link to="/register" className="text-primary hover:underline font-medium">
-            Create account
-          </Link>
-        </p>
+          <p className="mt-6 text-center text-sm text-muted-foreground">
+            Don't have an account?{" "}
+            <Link to="/register" className="text-primary hover:underline font-medium">
+              Create account
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

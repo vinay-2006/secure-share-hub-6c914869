@@ -1,13 +1,13 @@
-import { Share2, AlertTriangle, XCircle, ShieldAlert, Download, Clock, Eye } from "lucide-react";
+import { Share2, AlertTriangle, XCircle, ShieldAlert, Download, Clock, Eye, TrendingUp, TrendingDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/StatusBadge";
 import { mockShares, mockAdminMetrics } from "@/data/mockData";
 
 const metrics = [
-  { label: "Active Shares", value: mockAdminMetrics.activeShares, icon: Share2, color: "text-success" },
-  { label: "Expired Links", value: mockAdminMetrics.expiredLinks, icon: Clock, color: "text-warning" },
-  { label: "Revoked Links", value: mockAdminMetrics.revokedLinks, icon: XCircle, color: "text-destructive" },
-  { label: "Failed Attempts", value: mockAdminMetrics.failedAttempts, icon: ShieldAlert, color: "text-destructive" },
+  { label: "Active Shares", value: mockAdminMetrics.activeShares, icon: Share2, color: "text-success", trend: "+12%", up: true },
+  { label: "Expired Links", value: mockAdminMetrics.expiredLinks, icon: Clock, color: "text-warning", trend: "-5%", up: false },
+  { label: "Revoked Links", value: mockAdminMetrics.revokedLinks, icon: XCircle, color: "text-destructive", trend: "+1", up: true },
+  { label: "Failed Attempts", value: mockAdminMetrics.failedAttempts, icon: ShieldAlert, color: "text-destructive", trend: "+2%", up: true },
 ];
 
 export default function AdminPanel() {
@@ -32,15 +32,22 @@ export default function AdminPanel() {
           <div key={m.label} className="metric-card">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-muted-foreground">{m.label}</span>
-              <m.icon className={`h-4 w-4 ${m.color}`} />
+              <div className={`flex h-8 w-8 items-center justify-center rounded-md bg-secondary ${m.color}`}>
+                <m.icon className="h-4 w-4" />
+              </div>
             </div>
-            <p className="mt-2 text-3xl font-semibold text-foreground">{m.value}</p>
+            <p className="mt-2 text-3xl font-bold text-foreground tracking-tight">{m.value}</p>
+            <div className="mt-1 flex items-center gap-1 text-xs">
+              {m.up ? <TrendingUp className="h-3 w-3 text-success" /> : <TrendingDown className="h-3 w-3 text-warning" />}
+              <span className={m.up ? "text-success" : "text-warning"}>{m.trend}</span>
+              <span className="text-muted-foreground">vs last week</span>
+            </div>
           </div>
         ))}
       </div>
 
-      <div className="rounded-lg border border-border bg-card">
-        <div className="border-b border-border px-6 py-4">
+      <div className="rounded-md border border-border bg-card">
+        <div className="border-b border-border px-5 py-3.5">
           <h2 className="text-sm font-semibold text-foreground">All Files</h2>
         </div>
         <div className="overflow-x-auto">

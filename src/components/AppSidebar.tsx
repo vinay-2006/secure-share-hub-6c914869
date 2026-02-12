@@ -26,20 +26,20 @@ export function AppSidebar() {
 
   const linkClass = (path: string) =>
     cn(
-      "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+      "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors relative",
       location.pathname === path
-        ? "bg-accent text-accent-foreground"
-        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+        ? "bg-primary/10 text-foreground border-l-2 border-primary pl-[10px]"
+        : "text-muted-foreground hover:bg-secondary hover:text-foreground/80"
     );
 
   return (
-    <aside className="hidden lg:flex lg:flex-col lg:w-60 border-r border-border bg-card h-screen sticky top-0">
-      <div className="flex items-center gap-2 px-6 py-5 border-b border-border">
+    <aside className="hidden lg:flex lg:flex-col lg:w-60 border-r border-sidebar-border bg-sidebar h-screen sticky top-0">
+      <div className="flex items-center gap-2.5 px-6 py-5 border-b border-sidebar-border">
         <Lock className="h-5 w-5 text-primary" />
         <span className="text-lg font-semibold text-foreground">VaultLink</span>
       </div>
 
-      <nav className="flex-1 px-3 py-4 space-y-1">
+      <nav className="flex-1 px-3 py-4 space-y-0.5">
         {navItems.map((item) => (
           <RouterNavLink key={item.path} to={item.path} className={linkClass(item.path)}>
             <item.icon className="h-4 w-4" />
@@ -48,7 +48,7 @@ export function AppSidebar() {
         ))}
 
         <div className="pt-6 pb-2">
-          <span className="px-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+          <span className="px-3 text-xs font-medium uppercase tracking-wider text-muted-foreground/70">
             Administration
           </span>
         </div>
@@ -60,8 +60,8 @@ export function AppSidebar() {
         ))}
       </nav>
 
-      <div className="px-3 py-4 border-t border-border">
-        <RouterNavLink to="/login" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
+      <div className="px-3 py-4 border-t border-sidebar-border">
+        <RouterNavLink to="/login" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground/80 transition-colors">
           <LogOut className="h-4 w-4" />
           Logout
         </RouterNavLink>
