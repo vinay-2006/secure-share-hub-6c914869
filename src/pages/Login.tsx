@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { signIn } from "@/lib/auth";
+
 
 export default function Login() {
   const navigate = useNavigate();
@@ -12,10 +14,18 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    navigate("/dashboard");
-  };
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  const { error } = await signIn(email, password);
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  navigate("/dashboard");
+};
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
