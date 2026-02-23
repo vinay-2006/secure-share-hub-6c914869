@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { serve } from "https://deno.land/std@0.208.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
-import { compare, hash } from "https://deno.land/x/bcrypt@v0.4.1/mod.ts";
+import bcrypt from "https://esm.sh/bcryptjs@2.4.3";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -143,11 +143,11 @@ async function isRateLimited(
 
   const { data, error } = await supabase
     .from("access_logs")
-    .select("timestamp")
+    .select("created_at")
     .eq("status", "failed")
     .eq("ip_address", clientIp)
-    .gte("timestamp", windowStart)
-    .order("timestamp", { ascending: true })
+    .gte("created_at", windowStart)
+    .order("created_at", { ascending: true })
     .limit(RATE_LIMIT_MAX_FAILED_ATTEMPTS);
 
   if (error) {
@@ -160,7 +160,7 @@ async function isRateLimited(
 
   return {
     limited: true,
-    retryAfterSeconds: getRetryAfterSeconds(data[0].timestamp as string, now),
+    retryAfterSeconds: getRetryAfterSeconds(data[0].created_at as string, now),
   };
 }
 
@@ -237,13 +237,13 @@ serve(async (req: Request) => {
     let isValid = false;
 
     if (hashVersion === "bcrypt") {
-      isValid = await compare(password, file.password_hash);
+      isValid = await bcrypt.compare(password, file.password_hash);
     } else {
       const inputHash = await sha256(password);
       isValid = constantTimeEquals(inputHash, file.password_hash);
 
       if (isValid) {
-        const migratedHash = await hash(password);
+        const migratedHash = await bcrypt.hash(password, 10);
         await supabase
           .from("files")
           .update({

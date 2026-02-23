@@ -59,8 +59,8 @@ In Supabase Dashboard (Settings > Edge Functions > Secrets), add:
 ADMIN_USER_IDS=<your-user-id-1>,<your-user-id-2>
 OPS_MAINTENANCE_KEY=<generate-a-secure-random-key>
 ACCESS_LOG_RETENTION_DAYS=90
-RATE_LIMIT_SPIKE_THRESHOLD_ATTEMPTS=50
-FAILURE_SPIKE_THRESHOLD_ATTEMPTS=100
+RATE_LIMIT_SPIKE_THRESHOLD=50
+FAILURE_SPIKE_THRESHOLD=100
 ```
 
 To get your user ID:
@@ -144,7 +144,7 @@ supabase functions deploy ops-maintenance --header "key:MAINTENANCE_KEY_VALUE"
 Or use GitHub Actions / external cron service to call:
 ```
 POST https://qqhkuowjptgzftoztvda.supabase.co/functions/v1/ops-maintenance
-Header: X-Maintenance-Key: <OPS_MAINTENANCE_KEY>
+Header: X-Ops-Key: <OPS_MAINTENANCE_KEY>
 ```
 
 #### Step 8: Production Safety
@@ -186,8 +186,8 @@ supabase db push
 supabase functions deploy
 
 # Show function logs
-supabase functions download ops-maintenance
-supabase functions download validate-and-download
+supabase functions logs ops-maintenance
+supabase functions logs validate-and-download
 
 # List deployed functions
 supabase functions list

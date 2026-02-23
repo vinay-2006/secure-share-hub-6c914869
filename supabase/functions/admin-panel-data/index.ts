@@ -15,6 +15,25 @@ interface AdminPanelRequest {
   reasonFilter?: string;
 }
 
+function normalizeErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  if (typeof error === "object" && error !== null && "message" in error) {
+    const message = (error as { message?: unknown }).message;
+    if (typeof message === "string" && message.trim().length > 0) {
+      return message;
+    }
+  }
+
+  try {
+    return JSON.stringify(error);
+  } catch {
+    return "Unknown error";
+  }
+}
+
 function unauthorized(message = "Unauthorized") {
   return new Response(JSON.stringify({ success: false, error: message }), {
     status: 403,
@@ -116,8 +135,8 @@ serve(async (req: Request) => {
 
     const { data: logs, error: logsError } = await supabase
       .from("access_logs")
-      .select("id, timestamp, file_id, status, reason, ip_address")
-      .order("timestamp", { ascending: false })
+      .select("id, created_at, file_id, status, reason, ip_address")
+      .order("created_at", { ascending: false })
       .limit(500);
 
     if (logsError) {
@@ -126,6 +145,7 @@ serve(async (req: Request) => {
 
     const enrichedLogs = (logs || []).map((entry) => ({
       ...entry,
+      timestamp: entry.created_at,
       token: fileTokenById[entry.file_id] || "",
       user_id: fileUserById[entry.file_id] || "",
       original_name: fileNameById[entry.file_id] || "Unknown",
@@ -172,7 +192,7 @@ serve(async (req: Request) => {
       },
     );
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
+    const message = normalizeErrorMessage(error);
     return new Response(JSON.stringify({ success: false, error: message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },

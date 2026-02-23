@@ -136,11 +136,11 @@ async function isRateLimited(
 
   const { data, error } = await supabase
     .from("access_logs")
-    .select("timestamp")
+    .select("created_at")
     .eq("status", "failed")
     .eq("ip_address", clientIp)
-    .gte("timestamp", windowStart)
-    .order("timestamp", { ascending: true })
+    .gte("created_at", windowStart)
+    .order("created_at", { ascending: true })
     .limit(RATE_LIMIT_MAX_FAILED_ATTEMPTS);
 
   if (error) {
@@ -153,7 +153,7 @@ async function isRateLimited(
 
   return {
     limited: true,
-    retryAfterSeconds: getRetryAfterSeconds(data[0].timestamp as string, now),
+    retryAfterSeconds: getRetryAfterSeconds(data[0].created_at as string, now),
   };
 }
 

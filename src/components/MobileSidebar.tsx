@@ -1,6 +1,7 @@
-import { NavLink as RouterNavLink, useLocation } from "react-router-dom";
+import { NavLink as RouterNavLink, useLocation, useNavigate } from "react-router-dom";
 import { LayoutDashboard, Upload, Share2, FileText, Shield, LogOut, Lock, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { signOut } from "@/lib/auth";
 
 const navItems = [
   { label: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
@@ -20,6 +21,7 @@ interface MobileSidebarProps {
 
 export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
   const location = useLocation();
+  const navigate = useNavigate();
 
   if (!open) return null;
 
@@ -62,10 +64,18 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
         </nav>
 
         <div className="px-3 py-4 border-t border-sidebar-border">
-          <RouterNavLink to="/login" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground/80 transition-colors" onClick={onClose}>
+          <button
+            type="button"
+            className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground/80 transition-colors"
+            onClick={async () => {
+              await signOut();
+              onClose();
+              navigate("/login");
+            }}
+          >
             <LogOut className="h-4 w-4" />
             Logout
-          </RouterNavLink>
+          </button>
         </div>
       </div>
     </>

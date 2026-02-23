@@ -50,6 +50,7 @@ serve(async (req: Request) => {
   }
 
   try {
+
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL") || "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "",
@@ -58,6 +59,7 @@ serve(async (req: Request) => {
     const retentionDays = parseEnvInt("ACCESS_LOG_RETENTION_DAYS", 90);
     const rateLimitSpikeThreshold = parseEnvInt("RATE_LIMIT_SPIKE_THRESHOLD", 50);
     const failureSpikeThreshold = parseEnvInt("FAILURE_SPIKE_THRESHOLD", 100);
+    const warnings: string[] = [];
 
     const now = Date.now();
     const nowIso = new Date(now).toISOString();
@@ -92,7 +94,7 @@ serve(async (req: Request) => {
     const { error: retentionError } = await supabase
       .from("access_logs")
       .delete()
-      .lt("timestamp", retentionCutoffIso);
+      .lt("created_at", retentionCutoffIso);
 
     if (retentionError) {
       throw retentionError;
@@ -102,24 +104,24 @@ serve(async (req: Request) => {
       .from("access_logs")
       .select("id", { count: "exact", head: true })
       .in("reason", ["rate_limited", "password_rate_limited"])
-      .gte("timestamp", oneHourAgoIso);
+      .gte("created_at", oneHourAgoIso);
 
     if (recentRateLimitedError) {
-      throw recentRateLimitedError;
+      warnings.push("rate_limited_count_unavailable");
     }
 
     const { count: recentFailuresCount, error: recentFailuresError } = await supabase
       .from("access_logs")
       .select("id", { count: "exact", head: true })
       .eq("status", "failed")
-      .gte("timestamp", oneHourAgoIso);
+      .gte("created_at", oneHourAgoIso);
 
     if (recentFailuresError) {
-      throw recentFailuresError;
+      warnings.push("failed_count_unavailable");
     }
 
-    const rateLimitedCount = recentRateLimitedCount ?? 0;
-    const failedCount = recentFailuresCount ?? 0;
+    const rateLimitedCount = recentRateLimitedError ? 0 : (recentRateLimitedCount ?? 0);
+    const failedCount = recentFailuresError ? 0 : (recentFailuresCount ?? 0);
 
     const alerts: AlertItem[] = [];
     if (rateLimitedCount >= rateLimitSpikeThreshold) {
@@ -146,6 +148,7 @@ serve(async (req: Request) => {
         expiredFilesDeleted: expiredFileIds.length,
         retentionCutoffIso,
         alerts,
+        warnings,
       },
     });
   } catch (error) {

@@ -59,26 +59,18 @@ async function encryptFileContent(file: File, secret: string): Promise<{ encrypt
 function calculateExpiry(value: string): string | null {
   if (!value) return null;
 
-  const now = new Date();
+  const nowMs = Date.now();
+  const durations: Record<string, number> = {
+    "1h": 60 * 60 * 1000,
+    "24h": 24 * 60 * 60 * 1000,
+    "3d": 3 * 24 * 60 * 60 * 1000,
+    "7d": 7 * 24 * 60 * 60 * 1000,
+  };
 
-  switch (value) {
-    case "1h":
-      now.setHours(now.getHours() + 1);
-      break;
-    case "24h":
-      now.setHours(now.getHours() + 24);
-      break;
-    case "3d":
-      now.setDate(now.getDate() + 3);
-      break;
-    case "7d":
-      now.setDate(now.getDate() + 7);
-      break;
-    default:
-      return null;
-  }
+  const durationMs = durations[value];
+  if (!durationMs) return null;
 
-  return now.toISOString();
+  return new Date(nowMs + durationMs).toISOString();
 }
 
 export default function UploadFile() {
@@ -188,10 +180,19 @@ export default function UploadFile() {
         }
       );
 
-      const metadataResult = (await metadataRes.json()) as { success: boolean; error?: string };
+      const metadataResult = (await metadataRes.json()) as {
+        success: boolean;
+        error?: string;
+        message?: string;
+        code?: string;
+      };
 
       if (!metadataRes.ok || !metadataResult.success) {
-        const errorMsg = metadataResult.error || "Unable to save file metadata";
+        const errorMsg =
+          metadataResult.error ||
+          metadataResult.message ||
+          metadataResult.code ||
+          `Unable to save file metadata (HTTP ${metadataRes.status})`;
         
         // Check if this is an Edge Function deployment issue
         if (metadataRes.status === 404 || errorMsg.toLowerCase().includes('not found')) {

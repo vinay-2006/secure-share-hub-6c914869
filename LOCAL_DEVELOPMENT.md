@@ -51,7 +51,7 @@ This will:
 ### Step 3: Update Environment Variables
 Create or update `.env.local`:
 ```env
-VITE_SUPABASE_URL=http://localhost:54321
+VITE_SUPABASE_URL=http://127.0.0.1:56021
 VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
@@ -59,6 +59,8 @@ Get these from:
 ```bash
 supabase status
 ```
+
+Note: `.env.local` overrides `.env` during local development. Remove or rename `.env.local` when switching back to your cloud Supabase project.
 
 ### Step 4: Start Edge Functions Locally
 In new terminal:

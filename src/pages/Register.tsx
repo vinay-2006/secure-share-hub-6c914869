@@ -23,7 +23,13 @@ export default function Register() {
       return;
     }
 
-    const { error } = await signUp(email, password);
+    const trimmedName = name.trim();
+    if (!trimmedName) {
+      alert("Full name is required");
+      return;
+    }
+
+    const { error } = await signUp(email, password, trimmedName);
 
     if (error) {
       alert(error.message);

@@ -110,13 +110,19 @@ export default function AdminPanel() {
       const result = (await response.json()) as {
         success: boolean;
         error?: string;
+        message?: string;
         metrics?: AdminMetrics;
         files?: AdminFileRow[];
         logs?: AdminLogRow[];
       };
 
       if (!response.ok || !result.success) {
-        setError(result.error || "Unable to load admin data");
+        const backendError = result.error || result.message;
+        if (backendError) {
+          setError(backendError);
+        } else {
+          setError(`Unable to load admin data (HTTP ${response.status})`);
+        }
         setLoading(false);
         return;
       }
@@ -180,9 +186,14 @@ export default function AdminPanel() {
         return;
       }
 
-      const result = (await response.json()) as { success: boolean; error?: string };
+      const result = (await response.json()) as { success: boolean; error?: string; message?: string };
       if (!response.ok || !result.success) {
-        setError(result.error || "Action failed");
+        const backendError = result.error || result.message;
+        if (backendError) {
+          setError(backendError);
+        } else {
+          setError(`Action failed (HTTP ${response.status})`);
+        }
         return;
       }
 

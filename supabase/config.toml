@@ -136,6 +136,24 @@ policy = "per_worker"
 inspector_port = 8083
 deno_version = 2
 
+[functions.verify-file-password]
+verify_jwt = false
+
+[functions.create-share-metadata]
+verify_jwt = false
+
+[functions.validate-and-download]
+verify_jwt = false
+
+[functions.ops-maintenance]
+verify_jwt = false
+
+[functions.admin-panel-data]
+verify_jwt = false
+
+[functions.admin-share-action]
+verify_jwt = false
+
 [analytics]
 enabled = true
 port = 56027
