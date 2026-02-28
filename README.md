@@ -1,213 +1,169 @@
-# VaultLink – Secure File Sharing Platform
+# VaultLink – Secure, Auditable File Sharing
 
-**Repository:** [vinay-2006/secure-share-hub-6c914869](https://github.com/vinay-2006/secure-share-hub-6c914869)  
-**Live Demo:** [secure-share-hub-6c914869.vercel.app](https://secure-share-hub-6c914869.vercel.app)
+[Live App](https://secure-share-hub-6c914869.vercel.app) | [Source Code](https://github.com/vinay-2006/secure-share-hub-6c914869)
 
 ---
 
 ## 🚀 Overview
 
-VaultLink lets you securely share files with the highest level of privacy, auditability, and control.  
-**All core security, atomic validation, audit logging, and user-friendly features are shipped and ready for production deployment!**
+VaultLink is a policy-driven file sharing platform for securely transmitting files with:
 
-**Status:** ✅ Code Complete | ⏳ Ready for Deployment
+- Time-bound access
+- Download limits
+- Password-based protection
+- (Optional) client-side AES-GCM encryption
+- Full server-side audit logging
+- Admin visibility & revocation
 
----
-
-## ✨ Features
-
-- **Atomic, Secure File Sharing:**  
-  Upload files, set download limits/expiry, and protect with passwords/encryption
-
-- **Zero Client-Side Validation Loopholes:**  
-  All validation (revoke, expiry, download counting, and passwords) occurs *server-side* via Supabase Edge Functions
-
-- **Audit Logging & Admin Panel:**  
-  Full user and admin audit history, download metrics, geo-IP analysis, suspicious access detection, and more
-
-- **Real-Time Share Management:**  
-  View and revoke your active/expired/revoked shares, see download counts and expiry in real time
-
-- **Password & Encryption Protection:**  
-  Bcrypt password hashing, client-side AES-GCM encryption (optional), and secure download URLs
-
-- **Elegant React UI:**  
-  Modern, dark-mode design, responsive and accessible
+Core stack: **React**, **Supabase (Postgres, Storage, Edge Functions)**, **TypeScript**.
 
 ---
 
-## 🔒 Security by Design
+## 🎯 Motivation
 
-- All secret logic (download validation, password hashes, revocation, counting) runs on the server only
-- Password hashes **never** leave the backend
-- Atomic download counting with optimistic locking—no race conditions
-- Rate limiting (5 fails/10 mins/IP); geo-country and suspicious IP detection
-- **Audit** every access, with access logs and admin tools
+Most public file-sharing links:
 
----
+- Don’t enforce expiration
+- Allow unlimited downloads
+- Have no instant revocation
+- Offer limited access visibility
 
-## 🏗️ Architectural Highlights
-
-- **Frontend:** React + TypeScript (Vite, Tailwind), clean modular structure
-- **Backend:** Supabase (Database, Storage, Edge Functions)
-- **Edge Functions:** 
-    - `validate-and-download`: server-side validation & atomic download counter
-    - `verify-file-password`: secure password check (hash never given to browser)
-- **Data Model:** Organized for robust share lifecycle management and user isolation (Row Level Security)
-- For detailed design and security choices, see [`ARCHITECTURE_BUILT.md`](ARCHITECTURE_BUILT.md)
+VaultLink explores layered access controls, auditability, and server-side policy enforcement to address these issues.
 
 ---
 
-## 📚 Documentation
+## 🔑 Key Features
 
-- **[Quick Start](QUICK_START.md):** Choose to deploy, test, or just review
-- **[DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md):** Step-by-step production deployment (Supabase, Vercel)
-- **[LOCAL_DEVELOPMENT.md](LOCAL_DEVELOPMENT.md):** Run everything locally (Supabase emulator)
-- **[PROJECT_STATUS.md](PROJECT_STATUS.md):** Features, what works now, limitations
-- **[ERROR_HANDLING_IMPROVEMENTS.md](ERROR_HANDLING_IMPROVEMENTS.md):** Helpful error messages, troubleshooting
-- **[`supabase/functions/README.md`](supabase/functions/README.md):** Edge Function API contracts and deployment
-
----
-
-## ⚡ Getting Started
-
-### 1. Production Deployment (Recommended)
-> ~15-20 min to a full, production app with **all security features enabled**.
-```sh
-# 1. Follow deployment guide:
-cat DEPLOYMENT_GUIDE.md
-
-# 2. Quick summary:
-supabase login
-supabase link --project-ref <your-project-ref>
-supabase db push
-supabase functions deploy
-# Set env vars in Supabase Dashboard
-```
-
-### 2. Local Development/Test
-> Fastest way to try out the UI, or hack on the project without deploying.
-```sh
-# 1. Setup local Supabase:
-supabase start
-supabase functions serve
-
-# 2. Update .env.local with your local Supabase URL/keys
-npx vite
-```
-*Full UI and all client logic will work, but actual uploads/downloads require edge function deployment.*
-
-### 3. Just Review
-> Only want to review? You can read:
-- [`ARCHITECTURE_BUILT.md`](ARCHITECTURE_BUILT.md) (high-level technical)
-- [`PROJECT_STATUS.md`](PROJECT_STATUS.md) (features, status)
-- [`src/pages/`](src/pages/) (key React components)
+- **All critical validation server-side**: Expiry, download count, password check, revocation, and logging enforced via Supabase Edge Functions (not in the browser).
+- **Atomic download counter**: Prevents race conditions and double-counting.
+- **Password and encryption support**: Files can be protected by password (bcrypt hash, server-validated); optional client-side AES encryption.
+- **Access visibility**: Download logs tracked by timestamp, IP, and file.
+- **Instant revocation**: Disable a link immediately from UI.
+- **Admin panel**: High-level metrics and system actions.
 
 ---
 
-## 💡 What Works Now
+## ⚠️ Limitations
 
-- React UI (all forms, status badges, revoking, error handling)
-- Build + single test pass (TypeScript clean)
-- You can verify navigation, revoke, and UI filters
-- Access log listing, share status, and admin dashboard UIs
-- Security and validation flows (with all error cases handled gently)
-
-### After Deployment:
-- **File upload with password and/or AES-GCM encryption**
-- **Download rate-limiting and signed URLs**
-- **Admin metrics, full audit logging, geo-country detection**
-- **Automatic cleanup of expired shares**
+- Not externally security-audited or penetration-tested
+- Intended for learning/demo environments, not production
+- Rate limiting is basic (per-function, not distributed)
+- No malware scanning on upload
+- No CDN or DDoS bodyguarding
+- No RBAC; all users self-administered
+- No S3-bucket public access hardening verification
+- No mobile UI optimization
 
 ---
 
-## 🛣️ Project Structure
+## 🛠 Future Improvements
+
+- Distributed/global rate limiting
+- File extension/type validation & malware scanning
+- Role-based access control (RBAC)
+- Automated expired-share cleanup jobs (scheduled ops)
+- Monitoring and alerting integrations
+- External security/code audit
+
+---
+
+## 🗂️ Project Structure
 
 ```
 src/
   pages/
-    Dashboard.tsx
     UploadFile.tsx
     DownloadAccess.tsx
-    ShareResult.tsx
     MyShares.tsx
     AccessLogs.tsx
     AdminPanel.tsx
   components/
-    StatusBadge.tsx
-    AppSidebar.tsx
-    AppHeader.tsx
-  data/         // Test mocks
-  lib/          // API and utility helpers
-public/         // Static assets
 supabase/
-  functions/    // Edge (serverless) functions
-  migrations/   // Database changes
+  functions/           # Edge Functions (validate, password-check)
+  migrations/
 ```
+- See [`ARCHITECTURE_BUILT.md`](./ARCHITECTURE_BUILT.md) for technical design.
+- See [`PROJECT_STATUS.md`](./PROJECT_STATUS.md) for phase-by-phase work and results.
 
 ---
 
-## 🖌️ UI/UX and Theming
+## ⚡ Quick Start (Local Development)
 
-- **Dark mode** enabled by default (customizable via index.html)
-- Consistent color palette, accessible contrasts
-- Professional dashboard feel with responsive cards and animated status badges
-- All icons (Heroicons), focus handling, and tab navigation supported
+1. **Prerequisites:**  
+   - [Supabase CLI](https://supabase.com/docs/guides/cli) (`npm install -g supabase`)
+   - [Node.js](https://nodejs.org/) (recommended v18+)
 
----
+2. **Clone and Install:**
+   ```sh
+   git clone https://github.com/vinay-2006/secure-share-hub-6c914869.git
+   cd secure-share-hub-6c914869
+   npm install
+   ```
 
-## 📋 Tech Stack
+3. **Local Supabase Setup**  
+   (See [`LOCAL_DEVELOPMENT.md`](LOCAL_DEVELOPMENT.md) for detailed workflow)
+   ```sh
+   supabase start
+   supabase functions serve
+   # Set up .env.local with local anon key etc
+   npm run dev
+   ```
 
-- **Frontend:** React, TypeScript, Vite, Tailwind CSS, Heroicons
-- **Backend:** Supabase (Database & Storage), Edge Functions (TypeScript)
-- **CI & Deployment:** Vercel, Supabase CLI, GitHub Actions (deploy scripts included)
-- **Testing:** Vitest
-
----
-
-## 🎮 Demo/Test Accounts
-
-Create a demo account after deploying/running locally to test all flows  
-(Admin features: add your user ID to `ADMIN_USER_IDS` env)
-
----
-
-## 🔐 Security Notes
-
-- Never commit `.env.local` or secrets.
-- Encryption keys are never stored – only in browser memory!
-- Only backend has access to Supabase server role keys
+4. **Run tests/build:**
+   ```sh
+   npm run test
+   npm run build
+   ```
 
 ---
 
-## ▶️ Try it Yourself
+## 🚀 Deploying (Prototype Production)
 
-### Live (if deployed):
+*Follow [`DEPLOYMENT_GUIDE.md`](./DEPLOYMENT_GUIDE.md) for full environment and function setup. Key steps:*
 
-[Launch App](https://secure-share-hub-6c914869.vercel.app)
-
----
-
-## 🎉 Credits
-
-Built and open-sourced by [@vinay-2006](https://github.com/vinay-2006)
-
----
-
-## 📄 License
-
-_See repository for license details (custom, commercial, or open source)._
+```sh
+supabase login
+supabase link --project-ref <YOUR-PROJECT-REF>
+supabase db push
+supabase functions deploy
+# Set env vars in Supabase dashboard
+```
+- Use Vercel, Netlify etc for frontend. Ensure .env contains Supabase project URL/keys.
 
 ---
 
-> _Need full technical details, deployment help, or in-depth security explanation?  
-> See [ARCHITECTURE_BUILT.md](ARCHITECTURE_BUILT.md), [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md), and [supabase/functions/README.md](supabase/functions/README.md)._
+## 🔎 Documentation
+
+- [`ARCHITECTURE_BUILT.md`](./ARCHITECTURE_BUILT.md): Internal design, validations, flows
+- [`supabase/functions/README.md`](./supabase/functions/README.md): Edge Function endpoints and code
+- [`QUICK_START.md`](./QUICK_START.md): Fast local/production setup
+- [`PROJECT_STATUS.md`](./PROJECT_STATUS.md): Build progress, what’s working, known bugs
 
 ---
 
-_**Note: This README is based on current and quickly-evolving project documentation. For the most complete and up-to-date info, always check the files themselves in the repository!**_
+## 🤝 Contributing / Reuse
+
+Refactoring, audits, and scalability impact welcome.  
+Please PR additional hardening, scanning, or configuration files—this is a learning reference.
 
 ---
 
-**Partial file listing only; for full code and files visit the repository:**  
-https://github.com/vinay-2006/secure-share-hub-6c914869/tree/main
+## 📜 License
+
+*See LICENSE file or repo for current terms. Created for learning and demo purposes.*
+
+---
+
+## 👀 Live Demo
+
+- [https://secure-share-hub-6c914869.vercel.app](https://secure-share-hub-6c914869.vercel.app)
+  (Most features work only with full backend setup—see above.)
+
+---
+
+## 🙋 Questions?
+
+- For issues, open a GitHub Issue
+- For architecture, see docs linked above
+
+---
